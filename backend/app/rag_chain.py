@@ -9,9 +9,19 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.runnables import RunnableParallel
 
 load_dotenv()
+
+username = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
+database = os.getenv("DB_NAME")
+
+collection_name= os.getenv("COLLECTION_NAME")
+
+
 vector_store = PGVector(
-    collection_name="nglegaldocs",
-    connection_string="postgresql+psycopg://user12:pass12@192.168.1.96:5432/vector_db",
+    collection_name=collection_name,
+    connection_string="postgresql+psycopg://{username}:{password}@{host}:{port}/{database}",
     embedding_function=OpenAIEmbeddings()
 )
 

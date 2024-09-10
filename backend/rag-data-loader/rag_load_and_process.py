@@ -10,6 +10,14 @@ from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
 
+username = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
+database = os.getenv("DB_NAME")
+
+collection_name= os.getenv("COLLECTION_NAME")
+
 # AWS S3 Configuration
 s3_bucket_name = os.getenv("S3_BUCKET_NAME") # Specify the S3 bucket name
 s3_folder = os.getenv("S3_FOLDER_NAME")  # Specify the S3 folder containing the PDFs
@@ -53,8 +61,8 @@ with tempfile.TemporaryDirectory() as temp_dir:
     PGVector.from_documents(
         documents=chunks,
         embedding=embeddings,
-        collection_name="nglegaldocs",
-        connection_string="postgresql+psycopg://user12:pass12@192.168.1.96:5432/vector_db",
+        collection_name=collection_name,
+        connection_string="postgresql+psycopg://{username}:{password}@{host}:{port}/{database}",
         pre_delete_collection=True,
     )
 
