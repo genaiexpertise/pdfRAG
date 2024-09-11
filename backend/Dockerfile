@@ -6,6 +6,13 @@ RUN poetry config virtualenvs.create false
 
 WORKDIR /code
 
+COPY .env /code/.env
+COPY requirements.txt /code/requirements.txt
+
+RUN pip install -r requirements.txt
+
+RUN pip install boto3
+
 COPY ./pyproject.toml ./README.md ./poetry.lock* ./
 
 COPY ./package[s] ./packages

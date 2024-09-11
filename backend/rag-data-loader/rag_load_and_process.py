@@ -13,7 +13,7 @@ load_dotenv()
 username = os.getenv("DB_USER")
 password = os.getenv("DB_PASSWORD")
 host = os.getenv("DB_HOST")
-port = os.getenv("DB_PORT")
+port = int(os.getenv("DB_PORT"))
 database = os.getenv("DB_NAME")
 
 collection_name= os.getenv("COLLECTION_NAME")
@@ -62,8 +62,9 @@ with tempfile.TemporaryDirectory() as temp_dir:
         documents=chunks,
         embedding=embeddings,
         collection_name=collection_name,
-        connection_string="postgresql+psycopg://{username}:{password}@{host}:{port}/{database}",
+        connection_string="postgresql+psycopg://user12:pass12@localhost:5454/langchain",
         pre_delete_collection=True,
+        use_jsonb=True,
     )
 
 

@@ -14,11 +14,63 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [activeTab, setActiveTab] = useState("chat");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const sessionIdRef = useRef<string>(uuidv4());
 
   useEffect(() => {
     sessionIdRef.current = uuidv4();
   }, []);
+
+  const handleLogin = async () => {
+    setError(""); // Clear any previous errors
+    try {
+      const response = await fetch('http://localhost:8000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        setError("Login failed. Please check your username and password.");
+      }
+    } catch (error) {
+      setError("An error occurred during login. Please try again.");
+    }
+  };
+
+  const handleRegister = async () => {
+    setError(""); // Clear any previous errors
+    try {
+      const response = await fetch('http://localhost:8000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      setError("An error occurred during registration. Please try again.");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUsername("");
+    setPassword("");
+  };
 
   const setPartialMessage = (chunk: string, sources: string[] = []) => {
     setMessages(prevMessages => {
@@ -127,10 +179,50 @@ function App() {
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="bg-blue-100 p-6 rounded-lg shadow-md">
+          <h2 className="text-center text-2xl font-bold mb-4">Login  </h2>
+          <input
+            type="text"
+            placeholder="Username"
+            className="w-full p-2 mb-3 border rounded"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-2 mb-3 border rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <div className="flex justify-between">
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={handleLogin}
+            >
+              Login
+            </button>
+          
+          </div>
+          {error && <p className="text-red-600 text-center mt-4">{error}</p>}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="bg-blue-100 text-gray-800 text-center p-4 shadow-sm">
-        A Basic CHAT WITH YOUR PRIVATE PDFS Rag LLM App
+      <header className="bg-blue-100 text-gray-800 text-center p-4 shadow-sm flex justify-between">
+        <div>A Basic CHAT WITH YOUR PRIVATE PDFS Rag LLM App</div>
+        <button
+          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </header>
       <main className="flex-grow container mx-auto p-4">
         <div className="flex">
